@@ -16,9 +16,11 @@ LABEL maintainer="UC San Diego ITS/ETS <ets-consult@ucsd.edu>"
 # 2) change to root to install packages
 USER root
 
-RUN	apt-get install aria2 && \
-    apt-get install nmap && \
-    apt-get install traceroute
+RUN	apt-get update && \
+    apt-get install -y \
+    aria2 \
+    nmap \
+    traceroute
 
 # 3) install packages
 RUN conda install --yes geopandas
