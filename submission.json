@@ -1,7 +1,4 @@
 {
-  "config": ["config/data-params.json", "config/inputs.json"],
-  "build": "run.py", 
-  "library": ["src"],
-  "notebook": ["notebooks/final_code.ipynb"], 
-  "targets": ["data", "analysis", "model","all","test"] 
+  "dockerhub-id": "k3hg/docker:latest",
+  "repository-id": "https://github.com/k3huang/docker.git"
 }
