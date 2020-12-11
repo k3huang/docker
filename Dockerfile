@@ -1,35 +1,32 @@
-# 1) choose base container
-# generally use the most recent tag
+FROM alpine
+ARG USER_ID=1000
+ARG GROUP_ID=100
 
-# data science notebook
-# https://hub.docker.com/repository/docker/ucsdets/datascience-notebook/tags
-ARG BASE_CONTAINER=ucsdets/datascience-notebook:2020.2-stable
+# Enable HTTPS support in wget and set nsswitch.conf to make resolution work within containers
+RUN apk add --no-cache --update openssl \
+  && echo hosts: dns files > /etc/nsswitch.conf
 
-# scipy/machine learning (tensorflow)
-# https://hub.docker.com/repository/docker/ucsdets/scipy-ml-notebook/tags
-# ARG BASE_CONTAINER=ucsdets/scipy-ml-notebook:2020.2-stable
+# curl for nix install; shadow for adding a user
+RUN apk add --no-cache curl shadow
 
-FROM $BASE_CONTAINER
+# create a "dscuser" user with the same user ID as host
+RUN useradd -u ${USER_ID} -g ${GROUP_ID} -ms /bin/sh dscuser
 
-LABEL maintainer="UC San Diego ITS/ETS <ets-consult@ucsd.edu>"
+# install nix as dscuser
+RUN install -d -m755 -o $(id -u dscuser) -g $(id -g dscuser) /nix
+USER dscuser
+RUN curl -L https://nixos.org/nix/install | sh
+RUN echo "export USER=dscuser; source /home/dscuser/.nix-profile/etc/profile.d/nix.sh" >> /home/dscuser/.profile
 
-# 2) change to root to install packages
+# add entrypoint script; this just sources nix and runs its arguments inside a nix shell
 USER root
+RUN echo -e \
+    '#! /bin/sh\n' \
+    'source /home/dscuser/.profile\n' \
+    'nix-shell --run "$@"\n' >> /home/dscuser/entry.sh
+RUN chown dscuser /home/dscuser/entry.sh
+RUN chmod +x /home/dscuser/entry.sh
+USER dscuser
 
-RUN	apt-get update && \
-    apt-get install -y \
-    aria2 \
-    nmap \
-    traceroute
-
-# 3) install packages
-RUN conda install --yes geopandas
-RUN pip install --no-cache-dir babypandas
-
-# 4) change back to notebook user
-COPY /run_jupyter.sh /
-RUN chmod 755 /run_jupyter.sh
-USER $NB_UID
-
-# Override command to disable running jupyter notebook at launch
-# CMD ["/bin/bash"]
+WORKDIR /home/dscuser
+ENTRYPOINT ["/home/dscuser/entry.sh"]
