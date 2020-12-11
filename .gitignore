@@ -1,4 +1,8 @@
 ./data/
 __pycache__
 .ipynb_checkpoints
+<<<<<<< HEAD
 .DS_Store
+=======
+.DS_Store
+>>>>>>> f74565895c9e1102e8babf86ca8ebdf2291e117e
