@@ -1,4 +1,4 @@
 {
-  "DockerHub Repository": "k3hg/docker:latest",
-  "repository-id": "https://github.com/k3huang/docker.git"
+  "GitHub Repository": "https://github.com/k3huang/docker",
+  "DockerHub Repository": "https://hub.docker.com/repository/docker/k3hg/docker"
 }
