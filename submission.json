@@ -1,7 +1,4 @@
 {
-  "config": ["config/data-params.json", "config/inputs.json"],
-  "build": "run.py", 
-  "library": ["src"],
-  "notebook": ["notebooks/DSC180B_Presentation.ipynb"], 
-  "targets": ["data", "eda", "model"] 
+  "dockerhub-id": "k3hg/docker:latest",
+  "repository-id": "https://github.com/k3huang/docker.git"
 }
